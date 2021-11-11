@@ -251,7 +251,7 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
 
     elif data == 'question_start':
         env.user_data[chat_id]['step'] = 'question'
-        context.bot.send_message(chat_id = logic['from']['id'],text='Now you can ask question to us!!!!!Please ask what you want to know ?')
+        context.bot.send_message(chat_id = logic['from']['id'],text='Now you can ask question to us! Please ask what you want to know ?')
     elif data == 'trail_start':
         # context.bot.send_message(chat_id = logic['from']['id'],text  = "Please enter the amount of capital you want to use (this amount must be minimum 1k$)")     
         keyboard = [
