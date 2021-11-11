@@ -66,7 +66,7 @@ def start(update: Update, context: CallbackContext) -> None:
     user = update.message.from_user
     env.user_data[user.id]={'step':'none' , 'data' : {}}
     keyboard = [
-        [InlineKeyboardButton("yes", callback_data='yes_start')],
+        [InlineKeyboardButton("Subscribe", callback_data='yes_start')],
         [ InlineKeyboardButton("Trail", callback_data='trail_start')],
         [InlineKeyboardButton("question", callback_data='question_start')],
     ]
@@ -113,9 +113,9 @@ def echo(update: Update, context: CallbackContext) -> None:
         env.user_data[chat_id]['step'] = 'none'
         return
 
-
+    
     elif env.user_data[chat_id]['step'] == 'month_data_trail':
-        env.user_data[chat_id]['data']['month'] = text
+        env.user_data[chat_id]['data']['amount'] = text
         keyboard = [
             [InlineKeyboardButton("Binance", callback_data='Binance_trail')],
             [ InlineKeyboardButton("FTX", callback_data='FTX_trail')],
@@ -139,8 +139,7 @@ def echo(update: Update, context: CallbackContext) -> None:
             private_key = env.user_data[chat_id]['data']['Private_API_KEY']
             public_key = env.user_data[chat_id]['data']['Public_API_KEY']
             t = f'A new user has paid \n\nUser Name : {update.message.from_user.first_name}   @{update.message.from_user.username} \nPublic API_KEY : {public_key} \nPrivate API_KEY : {private_key}  '
-            # for i,j in env.user_data[chat_id]['data'].items():
-            #     if i == 'transaction_photo_id':
+            
             context.bot.send_photo(chat_id = i , photo = str(env.user_data[chat_id]['data']['transaction_photo_id']) , caption = t)
             
         return
@@ -179,14 +178,77 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
     # print(logic)
     # print(logic['data'])
     data = logic['data']
+
+
+
+    if env.user_data[chat_id]['step'] == 'yes_start':
+        env.user_data[chat_id]['data']['amount'] = data
+        keyboard = [
+            [InlineKeyboardButton("1 Month", callback_data='1 to 3k USD')],
+            [ InlineKeyboardButton("3 Month", callback_data='3 to 5k USD')],
+            [ InlineKeyboardButton("6 Month", callback_data='5 to 10k USD')],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        context.bot.send_message(chat_id = logic['from']['id'],reply_markup=reply_markup,text  = 'Please enter the plan duration you want (1 month, 3 months or 6 months)')
+        env.user_data[chat_id]['step'] = 'month_data'
+        return
+    elif env.user_data[chat_id]['step'] == 'month_data':
+        env.user_data[chat_id]['data']['month'] = data
+        keyboard = [
+            [InlineKeyboardButton("Binance", callback_data='Binance')],
+            [ InlineKeyboardButton("FTX", callback_data='FTX')],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        context.bot.send_photo(chat_id = logic['from']['id'],photo=open('static/ftx.jpg','rb'),caption='Have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
+        
+        env.user_data[chat_id]['step'] = 'none'
+        return
+    elif env.user_data[chat_id]['step'] == 'month_data_trail':
+        env.user_data[chat_id]['data']['amount'] = data
+        keyboard = [
+            [InlineKeyboardButton("Binance", callback_data='Binance_trail')],
+            [ InlineKeyboardButton("FTX", callback_data='FTX_trail')],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        context.bot.send_photo(chat_id = logic['from']['id'],photo=open('static/ftx.jpg','rb'),caption = 'Have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
+        
+        env.user_data[chat_id]['step'] = 'none'
+        return
+
+
+
+
+
+
+
+
+
+
     if data == 'yes_start':
-        context.bot.send_photo(chat_id = logic['from']['id'] , photo = open('static/yes_photo.jpg','rb') , caption = 'Please enter the amount of capital you want to \nuse (this amount must be minimum 1k$)')
+        keyboard = [
+            [InlineKeyboardButton("1 to 3k USD", callback_data='1 to 3k USD')],
+            [ InlineKeyboardButton("3 to 5k USD", callback_data='3 to 5k USD')],
+            [ InlineKeyboardButton("5 to 10k USD", callback_data='5 to 10k USD')],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        context.bot.send_photo(chat_id = logic['from']['id'],reply_markup = reply_markup , photo = open('static/yes_photo.jpg','rb') , caption = 'Please enter the amount of capital you want to \nuse (this amount must be minimum 1k$)')
         env.user_data[chat_id]['step'] = 'yes_start'
+
+    
+
+
     elif data == 'question_start':
         env.user_data[chat_id]['step'] = 'question'
         context.bot.send_message(chat_id = logic['from']['id'],text='Now you can ask question to us!!!!!Please ask what you want to know ?')
     elif data == 'trail_start':
-        context.bot.send_message(chat_id = logic['from']['id'],text  = "Please enter the amount of capital you want to use (this amount must be minimum 1k$)")     
+        # context.bot.send_message(chat_id = logic['from']['id'],text  = "Please enter the amount of capital you want to use (this amount must be minimum 1k$)")     
+        keyboard = [
+            [InlineKeyboardButton("1 to 3k USD", callback_data='1 to 3k USD')],
+            [ InlineKeyboardButton("3 to 5k USD", callback_data='3 to 5k USD')],
+            [ InlineKeyboardButton("5 to 10k USD", callback_data='5 to 10k USD')],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        context.bot.send_photo(chat_id = logic['from']['id'],reply_markup = reply_markup , photo = open('static/yes_photo.jpg','rb') , caption = 'Please enter the amount of capital you want to \nuse (this amount must be minimum 1k$)')
         env.user_data[chat_id]['step'] = 'month_data_trail'
     elif (data == 'FTX') or (data == 'Binance'):
         context.bot.send_message(chat_id=chat_id,text = "Thank you, you are a few steps from using our service ! Please send the subscription fee (X$) in USDT, USDC or BUSD at the following adress:\n'- USDT adress XXXXX\n'- USDC adress XXXXX\n'- BUSD adress XXXXX\nOnce the transfer is made, please send a screenshot here with the transaction ID:")
@@ -194,6 +256,8 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
     elif (data == 'FTX_trail') or (data == 'Binance_trail'):
         context.bot.send_message(chat_id=chat_id,text = "You are almost ready ! We need to collect your API keys (see tuto API on the channel if needed) It is important that you keep your public and private API keys written somewhere. Please start by answering with your public API key:")
         env.user_data[chat_id]['step'] = 'FTX_API_KEY'
+    
+
     
 
 
