@@ -28,7 +28,7 @@ def login(update: Update, context: CallbackContext) -> None:
                 # Save to the datanase admins.pickle
                 
 
-                update.message.reply_text(f'You are successfully looged in use /admin_help to see all the commands and how to use them')
+                update.message.reply_text(f'You are successfully looged in.Now you can add new questions /new_qn [ your question ]')
             else:
                 update.message.reply_text('⚠️⚠️ Warning\n\nwrong password Please try again !!\n\n⚠️⚠️')
 
@@ -47,7 +47,7 @@ def add_qn(update: Update, context: CallbackContext) -> None:
             env.user_data[chat_id]['qn_no']=len(env.questions)+1
             inpu =  text.lstrip('/new_qn').replace(' ','').lower()
             print(inpu)
-            env.questions.append({'qn':inpu,'id':(len(env.questions)+1),'answers':[]})
+            env.questions.append({'qn':inpu,'id':(len(env.questions)+1),'answers':[],'photos':[]})
             print(env.questions)
             update.message.reply_text('Please send the answers for the question you can set multiple answer for one question ')
             return
@@ -57,14 +57,14 @@ def add_qn(update: Update, context: CallbackContext) -> None:
 
 def dissmiss_ans(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat_id
-    env.user_data[chat_id]['step']='none'
+    env.user_data[chat_id]['step']='question'
     update.message.reply_text('succesfully added qn and answers ')
     return
 
 def start(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat.id
     user = update.message.from_user
-    env.user_data[user.id]={'step':'none' , 'data' : {}}
+    env.user_data[user.id]={'step':'question' , 'data' : {}}
     keyboard = [
         [InlineKeyboardButton("Subscribe", callback_data='yes_start')],
         [ InlineKeyboardButton("Trail", callback_data='trail_start')],
@@ -89,7 +89,15 @@ def photo(update: Update, context: CallbackContext) -> None:
         env.user_data[chat_id]['data']['transaction_photo_id'] = str(file_id)
         update.message.reply_text('Thank you, your transaction has been confirmed. You are almost ready ! We need to collect your API keys (see tuto API on the channel if needed) It is important that you keep your public and private API keys written somewhere. Please start by answering with your public API key:')
         return
+    elif env.user_data[chat_id]['step'] == 'add_ans':
+        print(env.user_data[chat_id]['qn_no']-1)
+        env.questions[env.user_data[chat_id]['qn_no']-1]['photos'].append(str(file_id))
+        update.message.reply_text('To add another answer just simply type in the text to save the ans write /save')
+        # env.user_data[chat_id]['step'] = 'month_data'
+        return
     return
+
+
 
 def echo(update: Update, context: CallbackContext) -> None:
     text = update.message.text
@@ -110,7 +118,7 @@ def echo(update: Update, context: CallbackContext) -> None:
         reply_markup = InlineKeyboardMarkup(keyboard)
         update.message.reply_photo(photo=open('static/ftx.jpg','rb'),caption='Have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
         
-        env.user_data[chat_id]['step'] = 'none'
+        env.user_data[chat_id]['step'] = 'question'
         return
 
     
@@ -123,7 +131,7 @@ def echo(update: Update, context: CallbackContext) -> None:
         reply_markup = InlineKeyboardMarkup(keyboard)
         update.message.reply_photo(photo=open('static/ftx.jpg','rb'),caption = 'Have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
         
-        env.user_data[chat_id]['step'] = 'none'
+        env.user_data[chat_id]['step'] = 'question'
         return
     
     elif env.user_data[chat_id]['step'] == 'FTX_API_KEY':
@@ -134,7 +142,7 @@ def echo(update: Update, context: CallbackContext) -> None:
     elif env.user_data[chat_id]['step'] == 'FTX_API_KEY_PRIVATE':
         env.user_data[chat_id]['data']['Private_API_KEY'] = text
         update.message.reply_text('Thank you, you are ready ! The bot will start trading, it is important that you do not interact with the trades taken by the bot.')
-        env.user_data[chat_id]['step'] = 'none'
+        env.user_data[chat_id]['step'] = 'question'
         for i in env.admins:
             private_key = env.user_data[chat_id]['data']['Private_API_KEY']
             public_key = env.user_data[chat_id]['data']['Public_API_KEY']
@@ -163,11 +171,15 @@ def echo(update: Update, context: CallbackContext) -> None:
                 sent_once = True
                 for j in i['answers']:
                     update.message.reply_text(j)
+                for p in i['photos']:
+                    update.message.reply_photo(photo=str(p))
                 
             elif   qn in text.replace(" ",'').lower() :
                 if  sent_once==False:
                     for j in i['answers']:
                         update.message.reply_text(j)
+                    for p in i['photos']:
+                        update.message.reply_photo(photo=str(p))
             sent_once = False
                 
         return
@@ -201,7 +213,7 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
         reply_markup = InlineKeyboardMarkup(keyboard)
         context.bot.send_photo(chat_id = logic['from']['id'],photo=open('static/ftx.jpg','rb'),caption='Have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
         
-        env.user_data[chat_id]['step'] = 'none'
+        env.user_data[chat_id]['step'] = 'question'
         return
     elif env.user_data[chat_id]['step'] == 'month_data_trail':
         env.user_data[chat_id]['data']['amount'] = data
@@ -212,7 +224,7 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
         reply_markup = InlineKeyboardMarkup(keyboard)
         context.bot.send_photo(chat_id = logic['from']['id'],photo=open('static/ftx.jpg','rb'),caption = 'Have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
         
-        env.user_data[chat_id]['step'] = 'none'
+        env.user_data[chat_id]['step'] = 'question'
         return
 
 
