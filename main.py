@@ -67,7 +67,7 @@ def start(update: Update, context: CallbackContext) -> None:
     env.user_data[user.id]={'step':'question' , 'data' : {}}
     keyboard = [
         [InlineKeyboardButton("Subscribe", callback_data='yes_start')],
-        [ InlineKeyboardButton("Trail", callback_data='trail_start')],
+        [ InlineKeyboardButton("Trial", callback_data='trial_start')],
         [InlineKeyboardButton("question", callback_data='question_start')],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
