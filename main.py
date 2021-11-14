@@ -122,11 +122,11 @@ def echo(update: Update, context: CallbackContext) -> None:
         return
 
     
-    elif env.user_data[chat_id]['step'] == 'month_data_trail':
+    elif env.user_data[chat_id]['step'] == 'month_data_trial':
         env.user_data[chat_id]['data']['amount'] = text
         keyboard = [
-            [InlineKeyboardButton("Binance", callback_data='Binance_trail')],
-            [ InlineKeyboardButton("FTX", callback_data='FTX_trail')],
+            [InlineKeyboardButton("Binance", callback_data='Binance_trial')],
+            [ InlineKeyboardButton("FTX", callback_data='FTX_trial')],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         update.message.reply_photo(photo=open('static/ftx.jpg','rb'),caption = 'Have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
@@ -215,11 +215,11 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
         
         env.user_data[chat_id]['step'] = 'question'
         return
-    elif env.user_data[chat_id]['step'] == 'month_data_trail':
+    elif env.user_data[chat_id]['step'] == 'month_data_trial':
         env.user_data[chat_id]['data']['amount'] = data
         keyboard = [
-            [InlineKeyboardButton("Binance", callback_data='Binance_trail')],
-            [ InlineKeyboardButton("FTX", callback_data='FTX_trail')],
+            [InlineKeyboardButton("Binance", callback_data='Binance_trial')],
+            [ InlineKeyboardButton("FTX", callback_data='FTX_trial')],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         context.bot.send_photo(chat_id = logic['from']['id'],photo=open('static/ftx.jpg','rb'),caption = 'Have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
