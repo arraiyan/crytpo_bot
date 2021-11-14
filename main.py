@@ -47,7 +47,7 @@ def add_qn(update: Update, context: CallbackContext) -> None:
             env.user_data[chat_id]['qn_no']=len(env.questions)+1
             inpu =  text.lstrip('/new_qn').replace(' ','').lower()
             print(inpu)
-            env.questions.append({'qn':inpu,'id':(len(env.questions)+1),'answers':[],'photos':[]})
+            env.questions.append({'qn':inpu,'id':(len(env.questions)+1),'answers':[],'photos':[],'main_qn':text.lstrip('/new_qn')})
             print(env.questions)
             update.message.reply_text('Please send the answers for the question you can set multiple answer for one question ')
             return
@@ -279,9 +279,10 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
             
         ]
         for i in env.questions :
-            for q,ans in i.items():
+            for q,ans in i.items():    
                 if q == 'qn':
-                    keyboard.append([InlineKeyboardButton(f"{ans}", callback_data=ans)])
+                    print(i['main_qn'])
+                    keyboard.append([InlineKeyboardButton(f"{i['main_qn']}", callback_data=ans)])
         reply_markup = InlineKeyboardMarkup(keyboard)
         context.bot.send_message(reply_markup=reply_markup,chat_id = logic['from']['id'],text='Now you can ask question to us!!!!!Please ask what you want to know ?')
     
