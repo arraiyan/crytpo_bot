@@ -71,7 +71,7 @@ def start(update: Update, context: CallbackContext) -> None:
         [InlineKeyboardButton("question", callback_data='question_start')],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text("Hi, welcome to Cryptomatic!  \nIf you chose a plan to subscribe, click "subscribe",\nIf  you want to benefit from the 7 days trial for free, click "trial",\nIf you have a question, click "question", thank you !"',parse_mode='HTML',reply_markup=reply_markup)
+    update.message.reply_text('"Hi, welcome to Cryptomatic!  \nIf you chose a plan to subscribe, click "subscribe",\nIf  you want to benefit from the 7 days trial for free, click "trial",\nIf you have a question, click "question", thank you !"',parse_mode='HTML',reply_markup=reply_markup)
     
 def help_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Help!')
