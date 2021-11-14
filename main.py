@@ -228,7 +228,30 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
         return
 
 
-
+    elif env.user_data[chat_id]['step'] == 'question':
+        print(env.questions)
+        all_questions = list()
+        for i in env.questions:
+            qn = i['qn']
+            sent_once = False
+            print(qn)
+            print(data.replace(" ",'').lower())
+            if  data.replace(" ",'').lower() in qn :
+                sent_once = True
+                for j in i['answers']:
+                    context.bot.send_message(chat_id = logic['from']['id'],text =j)
+                for p in i['photos']:
+                    context.bot.send_photo(chat_id = logic['from']['id'],photo=str(p))
+                
+            elif   qn in data.replace(" ",'').lower() :
+                if  sent_once==False:
+                    for j in i['answers']:
+                        context.bot.send_message(chat_id = logic['from']['id'],text =j)
+                    for p in i['photos']:
+                        context.bot.send_photo(chat_id = logic['from']['id'],photo=str(p))
+            sent_once = False
+                
+        
 
 
 
@@ -251,7 +274,18 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
 
     elif data == 'question_start':
         env.user_data[chat_id]['step'] = 'question'
-        context.bot.send_message(chat_id = logic['from']['id'],text='Now you can ask question to us! Please ask what you want to know ?')
+        keyboard = [
+            [InlineKeyboardButton("all question", callback_data='question_start')],
+            
+        ]
+        for i in env.questions :
+            for q,ans in i.items():
+                if q == 'qn':
+                    keyboard.append([InlineKeyboardButton(f"{ans}", callback_data=ans)])
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        context.bot.send_message(reply_markup=reply_markup,chat_id = logic['from']['id'],text='Now you can ask question to us!!!!!Please ask what you want to know ?')
+    
+    
     elif data == 'trail_start':
         # context.bot.send_message(chat_id = logic['from']['id'],text  = "Please enter the amount of capital you want to use (this amount must be minimum 1k$)")     
         keyboard = [
