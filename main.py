@@ -54,6 +54,20 @@ def add_qn(update: Update, context: CallbackContext) -> None:
         else:
             update.message.reply_text('Please login First /login { password }')
             return
+        
+def delete_qns(update: Update, context: CallbackContext) -> None:
+    if update.message.chat.type == 'private':
+        chat_id = update.message.chat_id
+        text = update.message.text
+        if update.message.from_user.id in env.admins:
+            env.questions = list()
+            env.user_data[chat_id]['step']='question'
+            env.user_data[chat_id]['qn_no']=0
+            update.message.reply_text('All questions deleted')
+            return
+        else:
+            update.message.reply_text('Please login First /login { password }')
+            return
 
 def dissmiss_ans(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat_id
@@ -317,6 +331,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("save", dissmiss_ans))
     dispatcher.add_handler(CommandHandler("login", login))
     dispatcher.add_handler(CommandHandler("new_qn", add_qn))
+    dispatcher.add_handler(CommandHandler("delete_qns", add_qn))
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CallbackQueryHandler(getClickButtonData))
     dispatcher.add_handler(MessageHandler(Filters.photo, photo))
