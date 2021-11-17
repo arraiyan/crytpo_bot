@@ -318,7 +318,28 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
         env.user_data[chat_id]['step'] = 'month_data_trial'
     elif (data == 'FTX') or (data == 'Binance'):
         fee = 0
-        context.bot.send_message(chat_id=chat_id,text = "Thank you, you are a few steps from using our service ! Please send the subscription fee (X$) in USDT, USDC or BUSD at the following adress:\n'- USDT adress XXXXX\n'- USDC adress XXXXX\n'- BUSD adress XXXXX\nOnce the transfer is made, please send a screenshot here with the transaction ID:")
+        amount = env.user_data[chat_id]['data']['amount']
+        month = env.user_data[chat_id]['data']['month']
+
+        if amount == '1 to 3k USD' and month == '1 Month':
+            fee = 29
+        elif amount == '1 to 3k USD' and month == '3 Month':
+            fee = 78
+        elif amount == '1 to 3k USD' and month == '6 Month':
+            fee = 139
+        if amount == '3 to 5k USD' and month == '1 Month':
+            fee = 49
+        elif amount == '3 to 5k USD' and month == '3 Month':
+            fee = 123
+        elif amount == '3 to 5k USD' and month == '6 Month':
+            fee = 235
+        if amount == '5 to 10k USD' and month == '1 Month':
+            fee = 79
+        elif amount == '5 to 10k USD' and month == '3 Month':
+            fee = 213
+        elif amount == '5 to 10k USD' and month == '6 Month':
+            fee = 379
+        context.bot.send_message(chat_id=chat_id,text = "Thank you, you are a few steps from using our service ! Please send the subscription fee (" + str(fee) + "$) in USDT or BUSD at the following adress:\n'- USDT ERC20 0x1C4Db31C8Cfdb277EFD9B013EDaeaeD64E8dd0C9\n'- USDT TRC20 TEv4Zn72xfbxvC4kNk3XP6e4fcVxKmjngJ\n'- BUSD ERC20 0x1C4Db31C8Cfdb277EFD9B013EDaeaeD64E8dd0C9\nOnce the transfer is made, please send a screenshot here with the transaction ID:")
         env.user_data[chat_id]['step'] = 'exchange_PHOTO'
         env.user_data[chat_id]['data']['EXCHANGE'] = data
     elif (data == 'FTX_trial') or (data == 'Binance_trial'):
