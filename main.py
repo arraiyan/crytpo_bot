@@ -143,7 +143,7 @@ def echo(update: Update, context: CallbackContext) -> None:
             [ InlineKeyboardButton("FTX", callback_data='FTX_trial')],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_photo(photo=open('static/ftx.jpg','rb'),caption = 'Do you have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
+        update.message.reply_photo(photo=open('static/ftx.jpg','rb'),caption = 'Do you have a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
         
         env.user_data[chat_id]['step'] = 'exchange_choice'
         return
@@ -226,9 +226,9 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
             [ InlineKeyboardButton("FTX", callback_data='FTX')],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        context.bot.send_photo(chat_id = logic['from']['id'],photo=open('static/ftx.jpg','rb'),caption='Have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
+        context.bot.send_photo(chat_id = logic['from']['id'],photo=open('static/ftx.jpg','rb'),caption='Do you have a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
         
-        env.user_data[chat_id]['step'] = 'question'
+        env.user_data[chat_id]['step'] = 'exchange_choice'
         return
     elif env.user_data[chat_id]['step'] == 'month_data_trial':
         env.user_data[chat_id]['data']['amount'] = data
@@ -237,9 +237,9 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
             [ InlineKeyboardButton("FTX", callback_data='FTX_trial')],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        context.bot.send_photo(chat_id = logic['from']['id'],photo=open('static/ftx.jpg','rb'),caption = 'Have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
+        context.bot.send_photo(chat_id = logic['from']['id'],photo=open('static/ftx.jpg','rb'),caption = 'Do you have a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
         
-        env.user_data[chat_id]['step'] = 'question'
+        env.user_data[chat_id]['step'] = 'exchange_choice'
         return
 
 
@@ -312,7 +312,7 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
         reply_markup = InlineKeyboardMarkup(keyboard)
         context.bot.send_photo(chat_id = logic['from']['id'],reply_markup = reply_markup , photo = open('static/yes_photo.jpg','rb') , caption = 'Please enter the amount of capital you want to \nuse (this amount must be minimum 1k$)')
         env.user_data[chat_id]['step'] = 'month_data_trial'
-    elif (data.upper() == 'FTX') or (data.upper() == 'Binance'):
+    elif (data == 'FTX') or (data == 'Binance'):
         context.bot.send_message(chat_id=chat_id,text = "Thank you, you are a few steps from using our service ! Please send the subscription fee (X$) in USDT, USDC or BUSD at the following adress:\n'- USDT adress XXXXX\n'- USDC adress XXXXX\n'- BUSD adress XXXXX\nOnce the transfer is made, please send a screenshot here with the transaction ID:")
         env.user_data[chat_id]['step'] = 'exchange_PHOTO'
         env.user_data[chat_id]['data']['EXCHANGE'] = data
