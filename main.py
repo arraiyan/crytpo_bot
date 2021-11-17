@@ -166,7 +166,8 @@ def echo(update: Update, context: CallbackContext) -> None:
             if 'amount' in env.user_data[chat_id]['data']:
                 amount = env.user_data[chat_id]['data']['amount']
                 month = env.user_data[chat_id]['data']['month']
-                t += f'\nInvestment Cap : {amount} \nPeriod : {month} '
+                fee = env.user_data[chat_id]['data']['fee']
+                t += f'\nInvestment Cap : {amount} \nPeriod : {month} \nPrice : {fee} '
             context.bot.send_photo(chat_id = i , photo = str(env.user_data[chat_id]['data']['transaction_photo_id']) , caption = t)
             
         return
@@ -339,6 +340,7 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
             fee = 213
         elif amount == '5 to 10k USD' and month == '6 Month':
             fee = 379
+        amount = env.user_data[chat_id]['data']['fee'] = fee
         context.bot.send_message(chat_id=chat_id,text = "Thank you, you are a few steps from using our service ! Please send the subscription fee (" + str(fee) + "$) in USDT or BUSD at the following adress:\n'- USDT ERC20 0x1C4Db31C8Cfdb277EFD9B013EDaeaeD64E8dd0C9\n'- USDT TRC20 TEv4Zn72xfbxvC4kNk3XP6e4fcVxKmjngJ\n'- BUSD ERC20 0x1C4Db31C8Cfdb277EFD9B013EDaeaeD64E8dd0C9\nOnce the transfer is made, please send a screenshot here with the transaction ID:")
         env.user_data[chat_id]['step'] = 'exchange_PHOTO'
         env.user_data[chat_id]['data']['EXCHANGE'] = data
