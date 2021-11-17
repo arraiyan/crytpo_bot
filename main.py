@@ -28,7 +28,7 @@ def login(update: Update, context: CallbackContext) -> None:
                 # Save to the datanase admins.pickle
                 
 
-                update.message.reply_text(f'You are successfully looged in.Now you can add new questions /new_qn [ your question ]')
+                update.message.reply_text(f'You are successfully looged in.\nAdmin ID : {update.message.from_user.id} \nNow you can add new questions /new_qn [ your question ]')
             else:
                 update.message.reply_text('⚠️⚠️ Warning\n\nwrong password Please try again !!\n\n⚠️⚠️')
 
