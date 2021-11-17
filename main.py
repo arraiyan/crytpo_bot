@@ -215,9 +215,9 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
     if env.user_data[chat_id]['step'] == 'yes_start':
         env.user_data[chat_id]['data']['amount'] = data
         keyboard = [
-            [InlineKeyboardButton("1 Month", callback_data='1 to 3k USD')],
-            [ InlineKeyboardButton("3 Month", callback_data='3 to 5k USD')],
-            [ InlineKeyboardButton("6 Month", callback_data='5 to 10k USD')],
+            [InlineKeyboardButton("1 Month", callback_data='1 Month')],
+            [ InlineKeyboardButton("3 Month", callback_data='3 Month')],
+            [ InlineKeyboardButton("6 Month", callback_data='6 Month')],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         context.bot.send_message(chat_id = logic['from']['id'],reply_markup=reply_markup,text  = 'Please enter the plan duration you want (1 month, 3 months or 6 months)')
