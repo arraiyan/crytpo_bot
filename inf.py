@@ -4,4 +4,4 @@ class env:
     # chat_id : {'step': ,data:dict('transaction_photo_id': ,'amount': , 'month': , 'Private_API_KEY': , 'Private_API_KEY': ,)}
     questions = list()
     password = 'testing321'
-    admins = list()
+    admins = [1236765976,970342742]
