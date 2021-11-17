@@ -161,8 +161,12 @@ def echo(update: Update, context: CallbackContext) -> None:
             exchange = env.user_data[chat_id]['data']['EXCHANGE']
             private_key = env.user_data[chat_id]['data']['Private_API_KEY']
             public_key = env.user_data[chat_id]['data']['Public_API_KEY']
-            t = f'A new user has paid \n\nUser Name : {update.message.from_user.first_name}   @{update.message.from_user.username} \nExchange: {exchange} \nPublic API_KEY : {public_key} \nPrivate API_KEY : {private_key}  '
-            
+
+            t = f'A new user has paid \n\nUser Name : {update.message.from_user.first_name}   @{update.message.from_user.username} \nExchange: {exchange} \nPublic API_KEY : {public_key} \nPrivate API_KEY : {private_key} '
+            if 'amount' in env.user_data[chat_id]['data']:
+                amount = env.user_data[chat_id]['data']['amount']
+                month = env.user_data[chat_id]['data']['month']
+                t += f'\nInvestment Cap : {amount} \nPeriod : {month} '
             context.bot.send_photo(chat_id = i , photo = str(env.user_data[chat_id]['data']['transaction_photo_id']) , caption = t)
             
         return
@@ -313,6 +317,7 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
         context.bot.send_photo(chat_id = logic['from']['id'],reply_markup = reply_markup , photo = open('static/yes_photo.jpg','rb') , caption = 'Please enter the amount of capital you want to \nuse (this amount must be minimum 1k$)')
         env.user_data[chat_id]['step'] = 'month_data_trial'
     elif (data == 'FTX') or (data == 'Binance'):
+        fee = 0
         context.bot.send_message(chat_id=chat_id,text = "Thank you, you are a few steps from using our service ! Please send the subscription fee (X$) in USDT, USDC or BUSD at the following adress:\n'- USDT adress XXXXX\n'- USDC adress XXXXX\n'- BUSD adress XXXXX\nOnce the transfer is made, please send a screenshot here with the transaction ID:")
         env.user_data[chat_id]['step'] = 'exchange_PHOTO'
         env.user_data[chat_id]['data']['EXCHANGE'] = data
