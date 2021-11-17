@@ -82,10 +82,10 @@ def start(update: Update, context: CallbackContext) -> None:
     keyboard = [
         [InlineKeyboardButton("Subscribe", callback_data='yes_start')],
         [ InlineKeyboardButton("Trial", callback_data='trial_start')],
-        [InlineKeyboardButton("question", callback_data='question_start')],
+        [InlineKeyboardButton("Question", callback_data='question_start')],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text('Hi, welcome to Cryptomatic!  \nIf you chose a plan to subscribe, click "subscribe",\nIf  you want to benefit from the 7 days trial for free, click "trial",\nIf you have a question, click "question", thank you !"',parse_mode='HTML',reply_markup=reply_markup)
+    update.message.reply_text('Hi, welcome to Cryptomatic!  \nIf you chose a plan to subscribe, click "subscribe",\nIf  you want to benefit from the 7 days trial for free, click "Trial",\nIf you have a question, click "Question", thank you !"',parse_mode='HTML',reply_markup=reply_markup)
     
 def help_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Help!')
@@ -98,8 +98,8 @@ def photo(update: Update, context: CallbackContext) -> None:
     # image = context.bot.get_file(file_id)
     # context.bot.send_photo(chat_id = chat_id , photo = str(file_id))
 
-    if env.user_data[chat_id]['step'] == 'FTX_PHOTO':
-        env.user_data[chat_id]['step'] = 'FTX_API_KEY'
+    if env.user_data[chat_id]['step'] == 'exchange_PHOTO':
+        env.user_data[chat_id]['step'] = 'EXCHANGE_API_KEY'
         env.user_data[chat_id]['data']['transaction_photo_id'] = str(file_id)
         update.message.reply_text('Thank you, your transaction has been confirmed. You are almost ready ! We need to collect your API keys (see tuto API on the channel if needed) It is important that you keep your public and private API keys written somewhere. Please start by answering with your public API key:')
         return
@@ -130,9 +130,9 @@ def echo(update: Update, context: CallbackContext) -> None:
             [ InlineKeyboardButton("FTX", callback_data='FTX')],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_photo(photo=open('static/ftx.jpg','rb'),caption='Have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
+        update.message.reply_photo(photo=open('static/ftx.jpg','rb'),caption='Do you have a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
         
-        env.user_data[chat_id]['step'] = 'question'
+        env.user_data[chat_id]['step'] = 'exchange_choice'
         return
 
     
@@ -143,24 +143,25 @@ def echo(update: Update, context: CallbackContext) -> None:
             [ InlineKeyboardButton("FTX", callback_data='FTX_trial')],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_photo(photo=open('static/ftx.jpg','rb'),caption = 'Have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
+        update.message.reply_photo(photo=open('static/ftx.jpg','rb'),caption = 'Do you have you a Binance or FTX account ? Please answer "binance" or "FTX" (if not, you need to create an account on one of these exchanges):',parse_mode='HTML',reply_markup=reply_markup)
         
-        env.user_data[chat_id]['step'] = 'question'
+        env.user_data[chat_id]['step'] = 'exchange_choice'
         return
     
-    elif env.user_data[chat_id]['step'] == 'FTX_API_KEY':
+    elif env.user_data[chat_id]['step'] == 'EXCHANGE_API_KEY':
         env.user_data[chat_id]['data']['Public_API_KEY'] = text
-        env.user_data[chat_id]['step'] = 'FTX_API_KEY_PRIVATE'
+        env.user_data[chat_id]['step'] = 'EXCHANGE_API_KEY_PRIVATE'
         update.message.reply_text('Thank you, now answer with your private API key:')
         return
-    elif env.user_data[chat_id]['step'] == 'FTX_API_KEY_PRIVATE':
+    elif env.user_data[chat_id]['step'] == 'EXCHANGE_API_KEY_PRIVATE':
         env.user_data[chat_id]['data']['Private_API_KEY'] = text
         update.message.reply_text('Thank you, you are ready ! The bot will start trading, it is important that you do not interact with the trades taken by the bot.')
         env.user_data[chat_id]['step'] = 'question'
         for i in env.admins:
+            exchange = env.user_data[chat_id]['data']['EXCHANGE']
             private_key = env.user_data[chat_id]['data']['Private_API_KEY']
             public_key = env.user_data[chat_id]['data']['Public_API_KEY']
-            t = f'A new user has paid \n\nUser Name : {update.message.from_user.first_name}   @{update.message.from_user.username} \nPublic API_KEY : {public_key} \nPrivate API_KEY : {private_key}  '
+            t = f'A new user has paid \n\nUser Name : {update.message.from_user.first_name}   @{update.message.from_user.username} \nExchange: {exchange} \nPublic API_KEY : {public_key} \nPrivate API_KEY : {private_key}  '
             
             context.bot.send_photo(chat_id = i , photo = str(env.user_data[chat_id]['data']['transaction_photo_id']) , caption = t)
             
@@ -311,12 +312,14 @@ def getClickButtonData(update:Update,context:CallbackContext)->None:
         reply_markup = InlineKeyboardMarkup(keyboard)
         context.bot.send_photo(chat_id = logic['from']['id'],reply_markup = reply_markup , photo = open('static/yes_photo.jpg','rb') , caption = 'Please enter the amount of capital you want to \nuse (this amount must be minimum 1k$)')
         env.user_data[chat_id]['step'] = 'month_data_trial'
-    elif (data == 'FTX') or (data == 'Binance'):
+    elif (data.upper() == 'FTX') or (data.upper() == 'Binance'):
         context.bot.send_message(chat_id=chat_id,text = "Thank you, you are a few steps from using our service ! Please send the subscription fee (X$) in USDT, USDC or BUSD at the following adress:\n'- USDT adress XXXXX\n'- USDC adress XXXXX\n'- BUSD adress XXXXX\nOnce the transfer is made, please send a screenshot here with the transaction ID:")
-        env.user_data[chat_id]['step'] = 'FTX_PHOTO'
+        env.user_data[chat_id]['step'] = 'exchange_PHOTO'
+        env.user_data[chat_id]['data']['EXCHANGE'] = data
     elif (data == 'FTX_trial') or (data == 'Binance_trial'):
         context.bot.send_message(chat_id=chat_id,text = "You are almost ready ! We need to collect your API keys (see tuto API on the channel if needed) It is important that you keep your public and private API keys written somewhere. Please start by answering with your public API key:")
-        env.user_data[chat_id]['step'] = 'FTX_API_KEY'
+        env.user_data[chat_id]['step'] = 'EXCHANGE_API_KEY'
+        env.user_data[chat_id]['data']['EXCHANGE'] = 'FTX' if data == 'FTX_trial' else 'Binance'
     
 
     
